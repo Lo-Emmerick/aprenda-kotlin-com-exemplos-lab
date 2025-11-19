@@ -2,20 +2,94 @@
 
 enum class Nivel { BASICO, INTERMEDIARIO, DIFICIL }
 
-class Usuario
+data class Usuario (val nome: String)
 
-data class ConteudoEducacional(var nome: String, val duracao: Int = 60)
+data class ConteudoEducacional(
+    val nome: String, 
+    val duracao: Int = 60,
+    val nivel: Nivel
+)
 
-data class Formacao(val nome: String, var conteudos: List<ConteudoEducacional>) {
+data class Formacao(val nome: String, val conteudos: List<ConteudoEducacional>) {
 
     val inscritos = mutableListOf<Usuario>()
-    
+
     fun matricular(usuario: Usuario) {
-        TODO("Utilize o parâmetro $usuario para simular uma matrícula (usar a lista de $inscritos).")
+        inscritos.add(usuario)
+        println("Usuario ${usuario.nome} matriculado no sistema")
+        println("Total de usuarios no sistema: ${inscritos.size}" )
     }
+
+    fun matricular(usuarios: List<Usuario>) {
+        inscritos+=usuarios
+        println("Total de usuarios no sistema: ${inscritos.size}")
+    }
+
+    fun listarConteudos(){
+        var conteudoCurso = String()
+        conteudos.forEach{
+            conteudoCurso+= "${it.nome} "
+        }
+        println("Os conteudos da Formação em ${nome} são: ${conteudoCurso}")
+    }
+
+    fun detalharConteudo(nomeConteudo: String){
+        val detalhesConteudo = conteudos.filter{it.nome == nomeConteudo}.first()
+
+        println("Detalhes sobre o conteudo:")
+        println("Nome: ${detalhesConteudo.nome}")
+        println("Duração: ${detalhesConteudo.duracao}")
+        println("Nivel: ${detalhesConteudo.nivel}")
+    }
+
+    fun detalhes(){
+        listarConteudos()
+        
+        val duracaoCurso = conteudos.sumOf{it.duracao}
+        println("Carga horária total: ${duracaoCurso}")
+        
+        conteudos.forEach{
+            detalharConteudo(it.nome)
+        }
+    }
+
 }
 
 fun main() {
-    TODO("Analise as classes modeladas para este domínio de aplicação e pense em formas de evoluí-las.")
-    TODO("Simule alguns cenários de teste. Para isso, crie alguns objetos usando as classes em questão.")
+
+    val listaConteudos = mutableListOf<ConteudoEducacional>(
+        ConteudoEducacional(
+            nome = "Kotlin",
+            duracao = 180,
+            nivel = Nivel.INTERMEDIARIO
+        ),
+
+        ConteudoEducacional(
+            nome = "Swift",
+            duracao = 260,
+            nivel = Nivel.DIFICIL
+        ),
+
+        ConteudoEducacional(
+            nome = "Flutter",
+            duracao = 80,
+            nivel = Nivel.BASICO
+        )
+    )
+
+    val formacao = Formacao("Mobile", listaConteudos)
+
+    val usuario1 = Usuario(nome = "Lorraine")
+    val usuario2 = Usuario(nome = "Danilo")
+
+    formacao.matricular(usuario1)
+    formacao.matricular(usuario2)
+
+    val usuarios = listOf(
+        Usuario(nome = "Ana"),
+        Usuario(nome = "Hugo")
+    )
+
+    formacao.matricular(usuarios)
+    formacao.detalhes()
 }
